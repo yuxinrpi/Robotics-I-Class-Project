@@ -134,7 +134,7 @@ limits = [2 1];
 
 % Reset the Robot to its starting point and starting orientation
 robot.Pose(1:2,4)=p0;
-robot.Pose(1:2,1:2)=rot2(thRobot);
+robot.Pose(1:2,1:2)=rot2(deg2rad(thRobot));
 
 showroom(3,5,5); hold On;
 show(robot);
