@@ -13,3 +13,10 @@ Instruction:
     1) Open Proj2_Jac_inv.m 
     2) Hit 'Run'  
     3) Sit back and relax until the result is shown 
+  Videos:
+  
+    1) RRR_demo1.avi           <- 3-Link First Set of Geometry Inverse Kinematics Solution
+    2) RRR_demo2.avi           <- 3-Link First Set of Geometry Inverse Kinematics Solution
+    3) RRR_Jacob_demo.avi      <- 3-Link Jacobian Inverse Kinematics Solution
+    4) 10link_Jacob_demo.avi   <- 10-Link Jacobian Inverse Kinematics Solution
+    5) 100link_Jacob_demo.avi  <- 100-Link Jacobian Inverse Kinematics Solution
