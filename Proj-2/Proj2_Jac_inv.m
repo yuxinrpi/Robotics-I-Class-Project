@@ -23,8 +23,8 @@ zz=zeros(3,1); ex = [1;0;0]; ey = [0;1;0]; ez = [0;0;1];
 % For RRR 3-link robot, robot type = 2
 robot_type = 1;
 if robot_type == 1
-    %n=50;l=3.5/n;
-    n=10;l=4/n;
+    n=10;l=3.5/n;
+    %n=100;l=4/n;
     robot.P = zeros(3,n+1);
     for i=1:n;robot.P(:,i+1)=l*[1;0;0];end
 elseif robot_type == 2

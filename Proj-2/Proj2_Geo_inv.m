@@ -29,13 +29,16 @@ zz=zeros(3,1); ex = [1;0;0]; ey = [0;1;0]; ez = [0;0;1];
 % robot parameters
 % De-comment other parameters to try other configurations
 l1 = 1.5; l2 = 1.5; l3 = 0.5;
-%l1 = 1.5; l2 = 1.5; l3 = 0.1;
-%l1 = 2; l2 = 1.5; l3 = 0.25;
-%l1 = 1.5; l2 = 1.5; l3 = 1;
+%l1 = 1.5; l2 = 1.5; l3 = 0.1; %test1
+%l1 = 1.5; l2 = 1.5; l3 = 0.55; %test2
+%l1 = 1.5; l2 = 2; l3 = 0.5; %test3
+%l1 = 1.5; l2 = 1.48; l3 = 0.5; %test4
+%l1 = 2; l2 = 1.5; l3 = 0.5;%test5
+%l1 = 1.48; l2 = 1.5; l3 = 0.5;%test6
 robot.P = [zz l1*ex l2*ex l3*ex];
 robot.H = [ez ez ez];
 robot.joint_type=[0 0 0];
-
+fprintf('Robot Link Length: %1.2f %1.2f %1.2f\n',l1,l2,l3);
 % zero configuration 
 % Initialize and plot the robot
 robot.q=[0;0;0];
