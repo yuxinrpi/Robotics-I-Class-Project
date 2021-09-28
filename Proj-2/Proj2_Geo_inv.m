@@ -59,39 +59,54 @@ for i=1:nl-1
     qsol2(:,i)=qsol(:,2);    
 end
 
+%Set up the Animation Recording
+v = VideoWriter('RRR_demo1.avi');
+open(v);
+
 % Plot the first set of solution
 figure(2);plot(Sls(1,:),Sls(2,:),Sls(1,1),Sls(2,1),'o','linewidth',2);
 hold on
 axis([-1,3,-2,2,-2,2])
 axis('square');
+xlabel('x');
+ylabel('y');
+title('First set of solution of Inverse Kinematics (Yuxin Hu)');
+grid;
 for i=1:3:nl-1
     robot.q=qsol1(:,i);
     show(robot_rb,robot.q,'Collision','on'); 
     pause(.1);
     view(0,90);
+    frame = getframe; 
+    writeVideo(v,frame);
 end
-xlabel('x');
-ylabel('y');
-title('First set of solution of Inverse Kinematics (Yuxin Hu)');
-grid;
+close(v);
 hold off;
-fprintf('max joint speed: %5.4f, %5.4f, %5.4f\n',max(abs(diff(qsol1')')')');
+fprintf('Solution 1 max joint speed: %5.4f, %5.4f, %5.4f\n',max(abs(diff(qsol1')')')');
+
+%Set up the Animation Recording
+v2 = VideoWriter('RRR_demo2.avi');
+open(v2);
 
 % Plot the second set of solution
 figure(3);plot(Sls(1,:),Sls(2,:),Sls(1,1),Sls(2,1),'o','linewidth',2);
 hold on
 axis([-1,3,-2,2,-2,2])
 axis('square');
-for i=1:3:nl-1
-    robot.q=qsol2(:,i);
-    show(robot_rb,robot.q,'Collision','on'); 
-    view(0,90);
-end
 xlabel('x');
 ylabel('y');
 title('Second set of solution of Inverse Kinematics (Yuxin Hu)');
+for i=1:3:nl-1
+    robot.q=qsol2(:,i);
+    show(robot_rb,robot.q,'Collision','on'); 
+    pause(.1);
+    view(0,90);
+    frame = getframe; 
+    writeVideo(v2,frame);
+end
+close(v2);
 grid;
-fprintf('max joint speed: %5.4f, %5.4f, %5.4f\n',max(abs(diff(qsol2')')')');
+fprintf('Solution 2 max joint speed: %5.4f, %5.4f, %5.4f\n',max(abs(diff(qsol2')')')');
 
 % Verification of Forward and Inverse Kinematics Functions
 % Generate three random q in [-pi, pi]

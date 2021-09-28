@@ -21,7 +21,7 @@ zz=zeros(3,1); ex = [1;0;0]; ey = [0;1;0]; ez = [0;0;1];
 % robot parameters
 % For n-link robot, robot type = 1
 % For RRR 3-link robot, robot type = 2
-robot_type = 2;
+robot_type = 1;
 if robot_type == 1
     %n=50;l=3.5/n;
     n=10;l=4/n;
@@ -104,18 +104,29 @@ for k=1:N-1
     q(:,k+1)=(qq>pi).*(-2*pi+qq)+(qq<-pi).*(2*pi+qq)+(qq<pi).*(qq>-pi).*qq;
 end
 
+%Set up the Animation Recording
+if robot_type == 1
+    v3 = VideoWriter('nlink_Jacob_demo.avi');
+else
+    v3 = VideoWriter('RRR_Jacob_demo.avi');
+end
+open(v3);
 
 % show robot motion 
 for k=1:FPD:N
     h=figure(10);
     plot(Sls(1,:),Sls(2,:),Sls(1,1),Sls(2,1),'o','linewidth',2);hold on;
+    axis([-1,3,-2,2]);axis('square');
+    xlabel('x');
+    ylabel('y');
+    title('Solution of Jacobian Inverse Kinematics (Yuxin Hu)');
     show(robot_rb,q(:,k),'Collision','on'); 
-    view(0,90);axis([-1,3,-2,2]);axis('square');
-    %pause(.1);
+    view(0,90);
+    pause(.1);
+    frame = getframe; 
+    writeVideo(v3,frame);
 end
-xlabel('x');
-ylabel('y');
-title('Solution of Jacobian Inverse Kinematics (Yuxin Hu)');
+close(v3);
 plot(Sls(1,:),Sls(2,:),Sls(1,1),Sls(2,1),'o','linewidth',2);
 grid;
 fprintf('max joint speed: %5.4f, %5.4f, %5.4f\n',max(abs(diff(q')')')');
