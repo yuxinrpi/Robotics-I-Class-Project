@@ -22,7 +22,7 @@ view(120,10);
 diffS=vecnorm(diff(p_S')');
 ls=[0 cumsum(diffS)];
 lf=sum(diffS);
-N=101;
+N=100;
 l=(0:lf/N:lf);
 
 pS=interp1(ls,p_S',l,'spline')';
@@ -78,12 +78,12 @@ set(h,'LineWidth',.5);
 
 
 
-% ABB IRB 1200 parameters
+% ABB IRB 1200-5/0.9 parameters
 
 L1=399.1;
-L2=350;
+L2=448;
 L3=42;
-L4=351;
+L4=451;
 L5=82;
 
 % P
@@ -110,7 +110,7 @@ R6T=[-ez ey ex];
 irb1200.P=[p01 p12 p23 p34 p45 p56 p6T]/1000;
 irb1200.H=[h1 h2 h3 h4 h5 h6];
 irb1200.joint_type=[0 0 0 0 0 0];
-irb1200.R6T=R6T;
+irb1200.R6T=eye(3,3);
 
 % define collision body for abb 1200
 radius=.01;
@@ -140,7 +140,7 @@ for i=1:N
 end
 
 % choose the pose to visualize
-ksol=1
+ksol=6
 
 for i=1:N
     % show robot pose (ever 5 frames)
@@ -256,8 +256,4 @@ function beta = R2EuA(R)
 end
 function M = hat(k)
     M = [0 -k(3) k(2); k(3) 0 -k(1); -k(2) k(1) 0];
-end
-
-function robot=invkinelbow(robot)
-
 end
