@@ -166,6 +166,7 @@ end
 % choose the pose to visualize
 ksol=6
 
+% Draw a new plot
 figure(6);
 plot3(pS(1,:),pS(2,:),pS(3,:),'rx','linewidth',3);
 xlabel('x');ylabel('y');zlabel('z');
@@ -179,14 +180,23 @@ axis(r*[-1 1 -1 1 0 2]);axis('square');
 view(120,10);
 h=plotTransforms(pS(:,1:m:end)',quat(:,1:m:end)');
 set(h,'LineWidth',.5);
+
+%Set up the Animation Recording
+v = VideoWriter('IRB-1200_invkin.avi');
+v.FrameRate = 10;
+open(v);
+
 for i=1:N
     % show robot pose (ever 5 frames)
     if mod(i,5)==0
         %disp(norm(T{i,ksol}-Td{i}));
         figure(6);show(irb1200_rbt,q(:,i,ksol),'collision','on');
+        frame = getframe; 
+        writeVideo(v,frame);
         view(150,10);
     end
 end
+close(v);
 
 % compute end effector linear and angular velcoity 
 lsdot=.01;
