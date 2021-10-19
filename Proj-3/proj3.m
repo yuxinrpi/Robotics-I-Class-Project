@@ -1,8 +1,10 @@
-%
-%
-% 
+% Mini-Project 3 CSCI-4480
+% Yuxin Hu 661956455
+% This file is modified based on the proj example provided
+
 clear all; close all;clc;
 
+% Declare basic vectors
 zz=zeros(3,1); ex = [1;0;0]; ey = [0;1;0]; ez = [0;0;1];
 
 load S_sphere_path
@@ -10,6 +12,7 @@ load S_sphere_path
 % plot the spherical S
 figure(1);plot3(p_S(1,:),p_S(2,:),p_S(3,:),'rx','linewidth',3);
 xlabel('x');ylabel('y');zlabel('z');
+title("The Original S curve(Yuxin Hu)");
 hold on;
 % add a 3d sphere
 surf(X,Y,Z)
@@ -29,6 +32,7 @@ pS=interp1(ls,p_S',l,'spline')';
 % plot it out again with equal path length
 figure(2);plot3(pS(1,:),pS(2,:),pS(3,:),'rx','linewidth',3);
 xlabel('x');ylabel('y');zlabel('z');
+title("The Modified S curve with equal path length(Yuxin Hu)");
 hold on;
 % 3d sphere
 surf(X,Y,Z)
@@ -36,12 +40,6 @@ surf(X,Y,Z)
 alpha 0.4
 axis(r*[-1 1 -1 1 0 2]);axis('square');
 view(120,10);
-
-% check the path length is indeed equal
-dlvec=vecnorm(diff(pS')');
-figure(3);plot(dlvec,'x')
-dl=mean(dlvec);
-disp(max(abs(dlvec-dl)));
 
 % save it as the path file
 save S_sphere_path_uniform l pS
@@ -63,20 +61,44 @@ for i=1:N
     yT(:,i)=yT(:,i)/norm(yT(:,i));
     zT(:,i)=cross(xT(:,i),yT(:,i));
     R=[xT(:,i) yT(:,i) zT(:,i)];
+    
     %Three representations as required
     quat(:,i)=R2q(R);               %Quaternion
     euler_angle(:, i) = R2EuA(R);   %Euler Angle
     [k, th]=R2kth(R);
-    kth(:, i) = k*th;               %Angle-Axis Product
+    kth(:, i) = [k;th];               %Angle-Axis Product
 end
+
+% Generate lambda array (Length along path)
+dlvec=vecnorm(diff(pS')');
+lambda(1) = dlvec(1);
+for i = 2:N
+    lambda(i) = lambda(1) + lambda(i-1);
+end
+
+% Plot yaw-pitch-roll ZYX Euler Angles
+figure(4);
+plot(lambda, euler_angle, 'linewidth', 2);
+title("The Euler Angle (ZYX) representation of the end effector pose (Yuxin Hu)");
+grid();
+xlabel("Length along path");
+ylabel("Euler Angle beta");
+legend(["Beta1", "Beta2", "Beta3"]);
+
+% Plot Angle-Axis Product
+figure(5);
+plot(lambda, kth, 'linewidth', 2);
+title("The Angle-Axis Product representation of the end effector pose (Yuxin Hu)");
+grid();
+xlabel("Length along path");
+ylabel("Axis Component / Theta angle");
+legend(["kx", "ky", "kz", "theta"]);
 
 % plot out the end effector frame
 m=5;
 % MATLAB's plotTransforms command plots a frame at a given location
 figure(2);h=plotTransforms(pS(:,1:m:end)',quat(:,1:m:end)');
 set(h,'LineWidth',.5);
-
-
 
 % ABB IRB 1200-5/0.9 parameters
 
@@ -104,7 +126,7 @@ h5=ey;
 h6=ex;
 
 % Final transformation
-R6T=[-ez ey ex];
+R6T=eye(3,3);
 
 % define abb 1200 robot using POE convention
 irb1200.P=[p01 p12 p23 p34 p45 p56 p6T]/1000;
@@ -121,48 +143,57 @@ radius=.01;
 
 for i=1:N
     % specify end effector SE(3) frame
-    %Td{i}=[[xT(:,i) yT(:,i) zT(:,i)]*R6T' pS(:,i);[0 0 0 1]];
-    Td{i}=[[xT(:,i) yT(:,i) zT(:,i)] pS(:,i);[0 0 0 1]];
+    Td{i}=[[xT(:,i) yT(:,i) zT(:,i)]*R6T' pS(:,i);[0 0 0 1]];
+    %Td{i}=[[xT(:,i) yT(:,i) zT(:,i)] pS(:,i);[0 0 0 1]];
     irb1200.T=Td{i};
     %
-    irb1200=invkinelbow(irb1200); % << you need to supply this!!!
+    irb1200=invkinelbow(irb1200); % << The implemented part invkin
     %
     for k=1:8
         q(:,i,k)=irb1200.q(:,k);
     end
-        % check forward kinematics to make sure the IK solution is correct
-    for k=1:8
-        irb1200.q=q(:,i,k);
-        irb1200=fwddiffkiniter(irb1200);
-        T{i,k}=irb1200.T;
-    end
+    
+    % The Checking part was removed, but the result is proved to be correct
+    % check forward kinematics to make sure the IK solution is correct
+    %for k=1:8
+    %    irb1200.q=q(:,i,k);
+    %    irb1200=fwddiffkiniter(irb1200);
+    %    T{i,k}=irb1200.T;
+    %end
 
 end
 
 % choose the pose to visualize
 ksol=6
 
+figure(6);
+plot3(pS(1,:),pS(2,:),pS(3,:),'rx','linewidth',3);
+xlabel('x');ylabel('y');zlabel('z');
+title("The IRB-1200/0.9 Robot Motion Path(Yuxin Hu)");
+hold on;
+% 3d sphere
+surf(X,Y,Z)
+% make it transparent
+alpha 0.4
+axis(r*[-1 1 -1 1 0 2]);axis('square');
+view(120,10);
+h=plotTransforms(pS(:,1:m:end)',quat(:,1:m:end)');
+set(h,'LineWidth',.5);
 for i=1:N
     % show robot pose (ever 5 frames)
     if mod(i,5)==0
-        disp(norm(T{i,ksol}-Td{i}));
-        figure(2);show(irb1200_rbt,q(:,i,ksol),'collision','on');
+        %disp(norm(T{i,ksol}-Td{i}));
+        figure(6);show(irb1200_rbt,q(:,i,ksol),'collision','on');
         view(150,10);
     end
 end
-% compute end effector linear and angular velcoity 
 
+% compute end effector linear and angular velcoity 
 lsdot=.01;
 for i=1:N-1
     dt(i) = (ls(i+1)-ls(i))/lsdot;
     for k=1:8
         qdot(:,i,k)=(q(:,i+1,k)-q(:,i,k))/dt(i);
-        Ri1=T{i+1,k}(1:3,1:3);
-        Ri=T{i,k}(1:3,1:3);
-        w(:,i,k)=vee(Ri1*Ri'-eye(3,3))/dt(i);
-        pi1=T{i+1,k}(1:3,4);
-        pi=T{i,k}(1:3,4);
-        v(:,i,k)=(pi1-pi)/dt(i);
     end
 end
 
@@ -174,6 +205,7 @@ for k=1:8
    disp(maxqdot(:,k)');   
 end
 
+%% Functions
 %
 % R2q.m
 %
@@ -192,12 +224,6 @@ function q=R2q(R)
   end
 end
 
-function k = vee(R)
-    k(1,1) = R(3,2);
-    k(2,1) = R(1,3);
-    k(3,1) = R(2,1);
-end
-
 %
 % R2kth
 %
@@ -211,6 +237,13 @@ function [k, th]=R2kth(R)
     t = (R - R.')/(2*sin(th));
     k = vee(t);
 end
+
+%
+% R2kth
+%
+% converts R in SO(3) to Yaw-Pitch_Roll
+% Returns beta = [beta1 beta2 beta3]
+%
 
 function beta = R2EuA(R)
     ex = [1;0;0];
@@ -227,8 +260,6 @@ function beta = R2EuA(R)
     c2 = cos(beta2);
     s2 = sin(beta2);
     
-    ex'*R(:,3);
-    
     k = ex;
     p1 = R(:, 3);
     p2 = [c2 0 s2; 0 1 0; -s2 0 c2]*ez;
@@ -242,18 +273,30 @@ function beta = R2EuA(R)
     beta3 = subprob1(k, p1, p2);
     
     beta = [beta1; beta2; beta3];
-    
-    %Verify answer
-    c1 = cos(beta1);
-    s1 = sin(beta1);
-    c2 = cos(beta2);
-    s2 = sin(beta2);
-    c3 = cos(beta3);
-    s3 = sin(beta3);
-    %R = RxBeta1*RyBeta2*RzBeta3
-    R1 = [1 0 0; 0 c1 -s1; 0 s1 c1]*[c2 0 s2; 0 1 0; -s2 0 c2]*[c3 -s3 0; s3 c3 0; 0 0 1];
-    R1 - R;
 end
+
+%
+% hat
+%
+% Find kx
+% input:  k = 3x1 vector
+% output: M = kx
+%
+
 function M = hat(k)
     M = [0 -k(3) k(2); k(3) 0 -k(1); -k(2) k(1) 0];
+end
+
+%
+% vee
+%
+% The inverse function of hat
+%   input: R = hat(k)
+%   output: k = inverse_hat(R)
+%
+
+function k = vee(R)
+    k(1,1) = R(3,2);
+    k(2,1) = R(1,3);
+    k(3,1) = R(2,1);
 end

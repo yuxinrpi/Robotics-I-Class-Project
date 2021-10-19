@@ -1,4 +1,4 @@
-function robot=fwddiffkiniter(robot)
+function robot=invkinelbow(robot)
     T = robot.T;
     P = robot.P;
     ex = [1;0;0];

@@ -1,3 +1,5 @@
+%% This file is a demo of stereographic projection
+%  Project Letter S curve onto a r=2 sphere, centered at 0,0,2
 close all; clear; clc;
 load S_letter_path.mat
 
@@ -9,9 +11,11 @@ Sls(1,:) = 0;
 %% Projection Parameter
 O = [0; 0; 2];
 N = [-2; 0; 2];
+
 %% Plot Sphere and Original curve
 plot3(Sls(1,:),Sls(2,:),Sls(3,:), 'linewidth', 3);
 hold on;
+
 r = 2;
 [X, Y, Z] = sphere;
 X = X*r+O(1,1);
@@ -24,11 +28,14 @@ grid();
 axis(r*[-1 1 -1 1 0 2]);axis('square');
 xlabel('x');ylabel('y');zlabel('z');
 title("Sterographic Projection of Letter S Path (Yuxin Hu)");
-%%
+
+%% Stereographic Projection
 Sls_p = [0; 0; 0];
 for i = 1:length(Sls)
     a = 2*((N - O).')*(N - Sls(:, i))/(norm(N - Sls(:, i))^2);
     P = a*(Sls(:, i) - N) + N;
     Sls_p(:, i) = P;
 end
+
+% Plot result
 plot3(Sls_p(1,:),Sls_p(2,:),Sls_p(3,:), 'rx', 'linewidth', 3);
