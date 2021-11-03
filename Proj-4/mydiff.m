@@ -1,6 +1,7 @@
-%
+% Modified Version of
 % fwddiffkiniter.m
-% 
+% Mini Project 4
+% Yuxin Hu
 %
 % input:    robot = robot object with
 %                   .q = joint displacement vector
