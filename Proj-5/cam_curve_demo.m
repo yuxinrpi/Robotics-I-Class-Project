@@ -20,7 +20,7 @@ v0=H/2; %center of image plane in pixel coordinate
 % XY plane -> YZ plane, 
 % Y range [1,3]->[-0.5,0.5], Z range [-1,1] -> [0,1]
 S = [zeros(1,length(Sls));Sls(1,:)/2-1;Sls(2,:)/2+.5];
-
+%S = [Sls(1,:)/2-1;Sls(2,:)/2+.5;zeros(1,length(Sls))];
 figure(6);plot3(S(1,:),S(2,:),S(3,:),'rx','linewidth',3);
 xlabel('x');ylabel('y');zlabel('z');
 title("The Planar S curve After Rectification(Yuxin Hu)");

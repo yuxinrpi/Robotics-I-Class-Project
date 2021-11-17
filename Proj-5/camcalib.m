@@ -1,4 +1,4 @@
-clear all;close all;
+clear all;close all;clc;
 
 % define a pinhole camera
 
@@ -9,7 +9,7 @@ cam_def;
 target_def;
 
 % Specify # of images
-M=20;
+M=50;
 
 % calibration fit matrix
 L=zeros(2*M,6);
@@ -30,6 +30,14 @@ for i= 1:M
         % projection onto camera image plane
         [uv_true{i},uvw_true{i},Pc_true{i}]=cam_image(cam,Toc{i},P0);
         %[uv_true{i},uvw_true{i},P1]=cam_image_round(cam,Toc{i},P0);
+        
+        mu = 0; % Mean
+        sd = 0.1; % Standard Deviation
+        % Add random Noise
+        for j=1:length(uv_true{i})
+            noise = sd*randn(2,1) + mu;
+            uv_true{i}(:,j) = uv_true{i}(:,j) + noise;
+        end
         
         if size(uv_true{i},2)<N;
             disp('some patterns are out of view');
@@ -122,7 +130,7 @@ hold off
 figure(2000);
 for i=1:M
   plot(uv_true{i}(1,:),uv_true{i}(2,:),'x',...
-      uv_est{i}(1,:),uv_est{i}(2,:),'o','linewidth',3);
+      uv_est{i}(1,:),uv_est{i}(2,:),'*','linewidth',1);
   hold on
 end
 title('image plane reprojection based on camera calibration');
