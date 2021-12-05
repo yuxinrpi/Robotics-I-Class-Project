@@ -16,14 +16,14 @@ kp = [  20;  150;  450; 3.55;     5;  .75];
 ki = [  65;  100;  300;   .5;   0.5;   .1]; 
 kd = [  20;   20;   10;  0.5;   0.5; 0.05];
 
-Trials = 1
+Trials = 3
 showMotion = 0;
 j=1;
 while j<=Trials
     %qdes=[0;0;0;0;0;0];
     %qdes = ones(6,1)*pi;
     qdes=(rand(6,1)-.5)*2*pi;
-    simout=sim('robotsimulation','ReturnWorkspaceOutputs', 'on');
+    simout=sim('robotsimulation_nofriction.slx','ReturnWorkspaceOutputs', 'on');
     
     if showMotion
         %Set up the Animation Recording
@@ -66,6 +66,9 @@ while j<=Trials
         RobotOS(i) = OS;
         RobotSS(i) = ss;
         RobotSSpercent(i) = SSpercent;
+    end
+    if max(RobotOS) >= 30 || max(RobotSS) >= 0.1
+        continue
     end
     
     avgOS(j,:) = RobotOS;
